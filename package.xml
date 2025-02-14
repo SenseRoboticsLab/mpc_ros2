@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mpc_ros</name>
+  <version>0.0.1</version>
+  <description>The mpc_ros package</description>
+
+  <maintainer email="gunhee6392@gmail.com">Geonhee Lee</maintainer>
+  <license>Apache-2.0</license>
+  <url type="website">https://github.com/Geonhee-LEE.com/</url>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+<!--  <depend>costmap_2d</depend>-->
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf-transformations</depend>
+  <depend>visualization_msgs</depend>
+  <depend>pluginlib</depend>
+<!--  <depend>base_local_planner</depend>-->
+<!--  <depend>move_base_msgs</depend>-->
+  <depend>rclcpp</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
