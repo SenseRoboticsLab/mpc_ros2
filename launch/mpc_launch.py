@@ -92,7 +92,7 @@ def generate_launch_description():
     ))
 
     # Node: RViz visualization
-    rviz_config = os.path.join(pkg_share, 'rviz', 'rviz_navigation.rviz')
+    rviz_config = os.path.join(pkg_share, 'launch', 'rviz.rviz')
     ld.add_action(Node(
         package='rviz2',
         executable='rviz2',

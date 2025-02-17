@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 project(mpc_ros)
 
 # Compile as C++17 (recommended for ROS 2)
@@ -22,10 +22,11 @@ find_package(pluginlib REQUIRED)
 #find_package(move_base_msgs REQUIRED)
 
 # Include directories
-include_directories(include)
-include_directories(/usr/include)
-include_directories(/usr/include/eigen3)
-link_directories(/usr/lib)
+#include_directories(include)
+#include_directories(/usr/include)
+#include_directories(/usr/include/linux)
+#include_directories(/usr/include/eigen3)
+#link_directories(/usr/lib)
 
 # Add executable
 add_executable(tracking_reference_trajectory
@@ -46,6 +47,9 @@ ament_target_dependencies(tracking_reference_trajectory
 )
 
 target_link_libraries(tracking_reference_trajectory ipopt)
+target_include_directories(tracking_reference_trajectory PUBLIC
+        include
+        /usr/include/eigen3)
 
 # Install targets
 install(TARGETS tracking_reference_trajectory

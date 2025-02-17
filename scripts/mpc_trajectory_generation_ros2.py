@@ -6,6 +6,7 @@ from nav_msgs.msg import Path, Odometry
 from math import sin, cos, pi, atan2, fabs
 from tf_transformations import quaternion_from_euler  # Install via pip if needed
 
+
 class PathNode(Node):
     def __init__(self):
         super().__init__('path_node')
@@ -36,6 +37,11 @@ class PathNode(Node):
 
         # Set up subscriber to /odom
         self.create_subscription(Odometry, '/odom', self.odom_cb, qos)
+        self.create_timer(0.1, self.publish_desired_path)
+
+    def publish_desired_path(self):
+        self.generation_desired_path()
+        self.desired_path_pub.publish(self.desired_path)
 
     def odom_cb(self, msg: Odometry):
         self.robot_odom = msg
@@ -60,7 +66,7 @@ class PathNode(Node):
         # Using the node's clock for timestamps:
         now = self.get_clock().now().to_msg()
         self.error_path.header.stamp = now
-        self.error_path.header.seq = 1
+        # self.error_path.header.seq = 1
 
         pose = PoseStamped()
         pose.header.frame_id = self.frame_id
@@ -73,7 +79,7 @@ class PathNode(Node):
         pose = PoseStamped()
         pose.header.frame_id = self.frame_id
         pose.header.stamp = now
-        self.error_path.header.seq = 2
+        # self.error_path.header.seq = 2
         pose.pose.position.x = self.robot_odom.pose.pose.position.x
         pose.pose.position.y = self.current_path_y
         pose.pose.orientation.w = 1.0
@@ -94,16 +100,16 @@ class PathNode(Node):
             for t in range(iter_count):
                 now = self.get_clock().now().to_msg()
                 desired_path.header.stamp = now
-                desired_path.header.seq = t
+                # desired_path.header.seq = t
 
                 pose = PoseStamped()
                 pose.header.frame_id = self.frame_id
                 pose.header.stamp = now
-                pose.header.seq = t
+                # pose.header.seq = t
                 pose.pose.position.x = radius * sin(2 * pi * t / period)
                 pose.pose.position.y = -radius * cos(2 * pi * t / period)
-                grad = atan2((-radius * cos(2 * pi * (t+1) / period) - pose.pose.position.y),
-                             (radius * sin(2 * pi * (t+1) / period) - (pose.pose.position.x + 1e-5)))
+                grad = atan2((-radius * cos(2 * pi * (t + 1) / period) - pose.pose.position.y),
+                             (radius * sin(2 * pi * (t + 1) / period) - (pose.pose.position.x + 1e-5)))
                 q = quaternion_from_euler(0, 0, grad)
                 pose.pose.orientation.x = q[0]
                 pose.pose.orientation.y = q[1]
@@ -120,16 +126,20 @@ class PathNode(Node):
             for t in range(iter_count):
                 now = self.get_clock().now().to_msg()
                 desired_path.header.stamp = now
-                desired_path.header.seq = t
+                # desired_path.header.seq = t
 
                 pose = PoseStamped()
                 pose.header.frame_id = self.frame_id
                 pose.header.stamp = now
-                pose.header.seq = t
-                pose.pose.position.x = scale_factor * ((R + r) * cos(2 * pi * t / period) - d * cos(((R + r) / r) * 2 * pi * t / period))
-                pose.pose.position.y = scale_factor * ((R + r) * sin(2 * pi * t / period) - d * sin(((R + r) / r) * 2 * pi * t / period))
-                grad = atan2((5 * sin(2 * pi * (t+1) / period) * cos(2 * pi * (t+1) / period) / ((sin(2 * pi * (t+1) / period))**2 + 1) - pose.pose.position.y),
-                             (5 * cos(2 * pi * (t+1) / period) / ((sin(2 * pi * (t+1) / period))**2 + 1) - pose.pose.position.x + 1e-5))
+                # pose.header.seq = t
+                pose.pose.position.x = scale_factor * (
+                            (R + r) * cos(2 * pi * t / period) - d * cos(((R + r) / r) * 2 * pi * t / period))
+                pose.pose.position.y = scale_factor * (
+                            (R + r) * sin(2 * pi * t / period) - d * sin(((R + r) / r) * 2 * pi * t / period))
+                grad = atan2((5 * sin(2 * pi * (t + 1) / period) * cos(2 * pi * (t + 1) / period) / (
+                            (sin(2 * pi * (t + 1) / period)) ** 2 + 1) - pose.pose.position.y),
+                             (5 * cos(2 * pi * (t + 1) / period) / (
+                                         (sin(2 * pi * (t + 1) / period)) ** 2 + 1) - pose.pose.position.x + 1e-5))
                 q = quaternion_from_euler(0, 0, grad)
                 pose.pose.orientation.x = q[0]
                 pose.pose.orientation.y = q[1]
@@ -143,16 +153,19 @@ class PathNode(Node):
             for t in range(iter_count):
                 now = self.get_clock().now().to_msg()
                 desired_path.header.stamp = now
-                desired_path.header.seq = t
+                # desired_path.header.seq = t
 
                 pose = PoseStamped()
                 pose.header.frame_id = self.frame_id
                 pose.header.stamp = now
-                pose.header.seq = t
-                pose.pose.position.x = 10 * cos(2 * pi * t / period) / ((sin(2 * pi * t / period))**2 + 1)
-                pose.pose.position.y = 10 * sin(2 * pi * t / period) * cos(2 * pi * t / period) / ((sin(2 * pi * t / period))**2 + 1)
-                grad = atan2((10 * cos(2 * pi * (t+1) / period) / ((sin(2 * pi * (t+1) / period))**2 + 1) - pose.pose.position.y),
-                             (10 * sin(2 * pi * (t+1) / period) * cos(2 * pi * (t+1) / period) / ((sin(2 * pi * (t+1) / period))**2 + 1) - pose.pose.position.x + 1e-5))
+                # pose.header.seq = t
+                pose.pose.position.x = 10 * cos(2 * pi * t / period) / ((sin(2 * pi * t / period)) ** 2 + 1)
+                pose.pose.position.y = 10 * sin(2 * pi * t / period) * cos(2 * pi * t / period) / (
+                            (sin(2 * pi * t / period)) ** 2 + 1)
+                grad = atan2((10 * cos(2 * pi * (t + 1) / period) / (
+                            (sin(2 * pi * (t + 1) / period)) ** 2 + 1) - pose.pose.position.y),
+                             (10 * sin(2 * pi * (t + 1) / period) * cos(2 * pi * (t + 1) / period) / (
+                                         (sin(2 * pi * (t + 1) / period)) ** 2 + 1) - pose.pose.position.x + 1e-5))
                 q = quaternion_from_euler(0, 0, grad)
                 pose.pose.orientation.x = q[0]
                 pose.pose.orientation.y = q[1]
@@ -169,19 +182,19 @@ class PathNode(Node):
             for t in range(iter_count):
                 now = self.get_clock().now().to_msg()
                 desired_path.header.stamp = now
-                desired_path.header.seq = t
+                # desired_path.header.seq = t
 
                 pose = PoseStamped()
                 pose.header.frame_id = self.frame_id
                 pose.header.stamp = now
-                pose.header.seq = t
+                # pose.header.seq = t
 
                 if t <= period * 0.25:
                     x = 0.0
                     y += l / (period * 0.25)
                     pose.pose.position.x = x
                     pose.pose.position.y = y
-                    q = quaternion_from_euler(0, 0, PI/2)
+                    q = quaternion_from_euler(0, 0, PI / 2)
                 elif t <= period * 0.5:
                     x -= l / (period * 0.25)
                     pose.pose.position.x = x
@@ -191,7 +204,7 @@ class PathNode(Node):
                     y -= l / (period * 0.25)
                     pose.pose.position.x = x
                     pose.pose.position.y = y
-                    q = quaternion_from_euler(0, 0, -PI/2)
+                    q = quaternion_from_euler(0, 0, -PI / 2)
                 elif t <= period:
                     x += l / (period * 0.25)
                     pose.pose.position.x = x
@@ -214,7 +227,8 @@ class PathNode(Node):
     def calculate_error(self, path_x, path_y, path_theta, robot_x, robot_y, robot_theta):
         self.error_x = fabs(path_x - robot_x)
         self.sum_error += self.error_x
-        self.get_logger().info(f"path_x: {path_x}, path_y: {path_y}, path_theta: {path_theta}, robot_x: {robot_x}, robot_y: {robot_y}, robot_theta: {robot_theta}")
+        self.get_logger().info(
+            f"path_x: {path_x}, path_y: {path_y}, path_theta: {path_theta}, robot_x: {robot_x}, robot_y: {robot_y}, robot_theta: {robot_theta}")
 
     def find_line_position(self, path_number, y):
         # NOTE: original function referenced undefined variables such as path_arr_yy and generateVel.
@@ -227,7 +241,7 @@ class PathNode(Node):
             return
 
         start_pt = self.desired_path.poses[path_number].pose.position
-        next_pt = self.desired_path.poses[path_number+1].pose.position
+        next_pt = self.desired_path.poses[path_number + 1].pose.position
 
         if start_pt.x == next_pt.x:
             self.current_path_x = start_pt.x
@@ -241,7 +255,6 @@ class PathNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = PathNode()
-    node.generation_desired_path()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  mpc_ros2:
+    image: mpc_ros2 # Specify your image name and tag here
+    build:
+      context: /home/da/project/ros/bluerov2_ws/src/mpc_ros2
+      dockerfile: ./.devcontainer/mpc_ros2.DockerFile # Use the actual name of your Dockerfile
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /home/da/extra/data:/home/da/extra/data
+      - /home/da/project/ros/bluerov2_ws/src/mpc_ros2:/home/da/project/ros/bluerov2_ws/src/mpc_ros2
+      - /home/da/project/ros/bluerov2_ws/third_party/Ipopt-3.12.8:/home/da/project/ros/bluerov2_ws/third_party/Ipopt-3.12.8
+    environment:
+      - DISPLAY=$DISPLAY
+      - XAUTHORITY=$XAUTHORITY
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    network_mode: host
+    stdin_open: true
+    tty: true
+    command: /usr/bin/bash
